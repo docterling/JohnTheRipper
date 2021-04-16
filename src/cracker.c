@@ -70,6 +70,7 @@
 #endif
 #include "rules.h"
 #include "tty.h"
+#include "color.h"
 
 #ifdef index
 #undef index
@@ -429,7 +430,7 @@ static int crk_process_guess(struct db_salt *salt, struct db_password *pw, int i
 			utf8_to_cp_r(utf8key, tmp8,
 			             PLAINTEXT_BUFFER_SIZE);
 			if (strcmp(tmp8, key)) {
-				fprintf(stderr, "Warning, conversion failed %s"
+				fprintf_color(color_warning, stderr, "Warning, conversion failed %s"
 				        " -> %s -> %s - fallback to codepage\n",
 				        key, utf8key, tmp8);
 				log_event("Warning, conversion failed %s -> %s"
@@ -900,7 +901,7 @@ static int crk_password_loop(struct db_salt *salt)
 			last_warn_kpc = crk_key_index;
 			if (options.node_count)
 				fprintf(stderr, "%u: ", NODE);
-			fprintf(stderr, "Warning: Only %d%s candidate%s buffered%s, "
+			fprintf_color(color_warning, stderr, "Warning: Only %d%s candidate%s buffered%s, "
 			        "minimum %d needed for performance.\n",
 			        crk_key_index,
 			        mask_int_cand.num_int_cand > 1 ? " base" : "",
@@ -911,7 +912,7 @@ static int crk_password_loop(struct db_salt *salt)
 			if (!--kpc_warn_limit) {
 				if (options.node_count)
 					fprintf(stderr, "%u: ", NODE);
-				fprintf(stderr,
+				fprintf_color(color_warning, stderr,
 				        "Further messages of this type will be suppressed.\n");
 				log_event(
 "- Saw %d calls to crypt_all() with sub-optimal batch size (stopped counting)",
