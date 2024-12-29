@@ -438,6 +438,9 @@ Major changes from 1.9.0-jumbo-1 (May 2019) in this bleeding-edge version:
 - BitShares format: Improve speeds, especially when attacking multiple wallets
   concurrently.  [Solar; 2025]
 
+- Add support for EC SSH keys encrypted with AES-256-CBC. [@peshev,
+  Richard Schwab; 2024-2025]
+
 
 Major changes from 1.8.0-jumbo-1 (December 2014) to 1.9.0-jumbo-1 (May 2019):
 
