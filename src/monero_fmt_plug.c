@@ -38,8 +38,10 @@ john_register_one(&fmt_monero);
 #define ALGORITHM_NAME          "Pseudo-AES/Keccak/BLAKE/Groestl/JH/Skein/ChaCha 8/" ARCH_BITS_STR
 #if __AVX__
 #define ALGORITHM_NAME_AESNI    "Pseudo-AES/Keccak/BLAKE/Groestl/JH/Skein/ChaCha 128/128 AVX AES-NI"
-#else
+#elif __x86_64__ /* our asm code uses SSE4.1 */
 #define ALGORITHM_NAME_AESNI    "Pseudo-AES/Keccak/BLAKE/Groestl/JH/Skein/ChaCha 128/128 SSE4.1 AES-NI"
+#else /* we use SSE2 intrinsics */
+#define ALGORITHM_NAME_AESNI    "Pseudo-AES/Keccak/BLAKE/Groestl/JH/Skein/ChaCha 128/128 SSE2 AES-NI"
 #endif
 #define BENCHMARK_COMMENT       ""
 #define BENCHMARK_LENGTH        7
