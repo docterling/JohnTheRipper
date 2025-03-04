@@ -30,8 +30,6 @@ john_register_one(&fmt_oubliette_idea);
 #include <omp.h>
 #endif
 
-#define SIMD_WIDTH 1		// No SIMD, process one at a time
-
 #include "arch.h"
 #include "misc.h"
 #include "common.h"
@@ -42,7 +40,7 @@ john_register_one(&fmt_oubliette_idea);
 #define FORMAT_NAME             "Oubliette IDEA"
 #define FORMAT_TAG              "$oubliette-idea$"
 #define TAG_LENGTH              (sizeof(FORMAT_TAG)-1)
-#define ALGORITHM_NAME          "SHA1 IDEA 32/" ARCH_BITS_STR
+#define ALGORITHM_NAME          "SHA1/IDEA 32/" ARCH_BITS_STR
 #define BENCHMARK_COMMENT       ""
 #define BENCHMARK_LENGTH        0x107
 #define PLAINTEXT_LENGTH        125
@@ -50,21 +48,18 @@ john_register_one(&fmt_oubliette_idea);
 #define BINARY_ALIGN            sizeof(uint32_t)
 #define SALT_SIZE               0
 #define SALT_ALIGN              1
-#define MIN_KEYS_PER_CRYPT      16
+#define MIN_KEYS_PER_CRYPT      1
 #define MAX_KEYS_PER_CRYPT      256
 #define OMP_SCALE               16
 
-// Aligned buffer for better cache performance
 typedef struct {
 	// Group frequently accessed data together
-	unsigned char padded_sha1[32] __attribute__ ((aligned(16)));
-	IDEA_KEY_SCHEDULE ks __attribute__ ((aligned(16)));
+	unsigned char padded_sha1[32];
+	IDEA_KEY_SCHEDULE ks;
 	// Less frequently accessed data
-	unsigned char iv[8] __attribute__ ((aligned(16)));
-	unsigned char encrypted_iv[8] __attribute__ ((aligned(16)));
+	unsigned char iv[8];
+	unsigned char encrypted_iv[8];
 } oubliette_state;
-
-#endif
 
 static struct fmt_tests tests[] = {
 	{"$oubliette-idea$1.0$e82bb8b871ed9a2b7d77afce662325a2c522844e0e91bde104b8e4f68044e991", "12345678"},
@@ -73,10 +68,9 @@ static struct fmt_tests tests[] = {
 	{NULL}
 };
 
-static unsigned char (*saved_key)[PLAINTEXT_LENGTH];
+static char (*saved_key)[PLAINTEXT_LENGTH + 1];
 static int *saved_len;
 static uint32_t(*crypt_out)[BINARY_SIZE / sizeof(uint32_t)];
-static oubliette_state *state;
 
 static void init(struct fmt_main *self)
 {
@@ -86,12 +80,10 @@ static void init(struct fmt_main *self)
 	saved_key = mem_calloc(self->params.max_keys_per_crypt, sizeof(*saved_key));
 	saved_len = mem_calloc(self->params.max_keys_per_crypt, sizeof(*saved_len));
 	crypt_out = mem_calloc(self->params.max_keys_per_crypt, sizeof(*crypt_out));
-	state = mem_calloc(self->params.max_keys_per_crypt, sizeof(*state));
 }
 
 static void done(void)
 {
-	MEM_FREE(state);
 	MEM_FREE(saved_key);
 	MEM_FREE(saved_len);
 	MEM_FREE(crypt_out);
@@ -150,17 +142,12 @@ static void *get_binary(char *ciphertext)
 
 static void set_key(char *key, int index)
 {
-	saved_len[index] = strlen(key);
-	memcpy(saved_key[index], key, saved_len[index]);
+	saved_len[index] = strnzcpyn(saved_key[index], key, sizeof(*saved_key));
 }
 
 static char *get_key(int index)
 {
-	static char out[PLAINTEXT_LENGTH + 1];
-
-	memcpy(out, saved_key[index], saved_len[index]);
-	out[saved_len[index]] = 0;
-	return out;
+	return saved_key[index];
 }
 
 static int get_hash_0(int index)
@@ -200,23 +187,22 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-	for (index = 0; index < count; index += SIMD_WIDTH) {
-		oubliette_state *s = &state[index];
+	for (index = 0; index < count; index++) {
+		oubliette_state s;
 		SHA_CTX ctx;
 
 		SHA1_Init(&ctx);
 		SHA1_Update(&ctx, saved_key[index], saved_len[index]);
-		SHA1_Final(s->padded_sha1, &ctx);
+		SHA1_Final(s.padded_sha1, &ctx);
 
-		memset(s->padded_sha1 + 20, 0xFF, 12);
-		JtR_idea_set_encrypt_key(s->padded_sha1, &s->ks);
-		memset(s->iv, 0xFF, 8);
-		JtR_idea_ecb_encrypt(s->iv, s->encrypted_iv, &s->ks);
+		memset(s.padded_sha1 + 20, 0xFF, 12);
+		JtR_idea_set_encrypt_key(s.padded_sha1, &s.ks);
+		memset(s.iv, 0xFF, 8);
+		JtR_idea_ecb_encrypt(s.iv, s.encrypted_iv, &s.ks);
 
-		unsigned char *out = (unsigned char *)crypt_out[index];
-
-		JtR_idea_cbc_encrypt(s->padded_sha1, out, 32, &s->ks, s->encrypted_iv, IDEA_ENCRYPT);
+		JtR_idea_cbc_encrypt(s.padded_sha1, (unsigned char *)crypt_out[index], 32, &s.ks, s.encrypted_iv, IDEA_ENCRYPT);
 	}
+
 	return count;
 }
 
@@ -224,10 +210,9 @@ static int cmp_all(void *binary, int count)
 {
 	int index;
 
-	for (index = 0; index < count; index++) {
-		if (!memcmp(binary, crypt_out[index], BINARY_SIZE))
+	for (index = 0; index < count; index++)
+		if (*(uint32_t *)binary == crypt_out[index][0])
 			return 1;
-	}
 	return 0;
 }
 
@@ -303,3 +288,4 @@ struct fmt_main fmt_oubliette_idea = {
 };
 
 #endif /* plugin stanza */
+#endif /* HAVE_LIBCRYPTO */
