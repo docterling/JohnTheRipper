@@ -25,7 +25,6 @@ john_register_one(&fmt_oubliette_blowfish);
 
 #include <string.h>
 #include <openssl/blowfish.h>
-#include <openssl/sha.h>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -35,8 +34,9 @@ john_register_one(&fmt_oubliette_blowfish);
 #include "misc.h"
 #include "common.h"
 #include "formats.h"
+#include "sha.h"
 
-#define FORMAT_LABEL            "oubliette-blowfish"
+#define FORMAT_LABEL            "Oubliette-Blowfish"
 #define FORMAT_NAME             "Oubliette Blowfish"
 #define FORMAT_TAG              "$oubliette-blowfish$"
 #define TAG_LENGTH              (sizeof(FORMAT_TAG)-1)

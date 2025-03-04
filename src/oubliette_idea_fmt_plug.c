@@ -15,8 +15,6 @@
 #include "autoconfig.h"
 #endif
 
-#if HAVE_LIBCRYPTO
-
 #if FMT_EXTERNS_H
 extern struct fmt_main fmt_oubliette_idea;
 #elif FMT_REGISTERS_H
@@ -24,7 +22,6 @@ john_register_one(&fmt_oubliette_idea);
 #else
 
 #include <string.h>
-#include <openssl/sha.h>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -34,9 +31,10 @@ john_register_one(&fmt_oubliette_idea);
 #include "misc.h"
 #include "common.h"
 #include "formats.h"
+#include "sha.h"
 #include "idea-JtR.h"
 
-#define FORMAT_LABEL            "oubliette-idea"
+#define FORMAT_LABEL            "Oubliette-IDEA"
 #define FORMAT_NAME             "Oubliette IDEA"
 #define FORMAT_TAG              "$oubliette-idea$"
 #define TAG_LENGTH              (sizeof(FORMAT_TAG)-1)
@@ -70,7 +68,7 @@ static struct fmt_tests tests[] = {
 
 static char (*saved_key)[PLAINTEXT_LENGTH + 1];
 static int *saved_len;
-static uint32_t(*crypt_out)[BINARY_SIZE / sizeof(uint32_t)];
+static uint32_t (*crypt_out)[BINARY_SIZE / sizeof(uint32_t)];
 
 static void init(struct fmt_main *self)
 {
@@ -288,4 +286,3 @@ struct fmt_main fmt_oubliette_idea = {
 };
 
 #endif /* plugin stanza */
-#endif /* HAVE_LIBCRYPTO */
