@@ -89,29 +89,9 @@ static void done(void)
 
 static int valid(char *ciphertext, struct fmt_main *self)
 {
-	char *p;
-	char *ctcopy;
-	char *keeptr;
-
-	if (strncmp(ciphertext, FORMAT_TAG, TAG_LENGTH) != 0)
-		return 0;
-
-	ctcopy = xstrdup(ciphertext);
-	keeptr = ctcopy;
-	ctcopy += TAG_LENGTH;
-
-	if ((p = strtokm(ctcopy, "$")) == NULL)	/* hash */
-		goto err;
-
-	if (hexlenl(p, NULL) != BINARY_SIZE * 2)
-		goto err;
-
-	MEM_FREE(keeptr);
-	return 1;
-
-err:
-	MEM_FREE(keeptr);
-	return 0;
+	return !strncmp(ciphertext, FORMAT_TAG, TAG_LENGTH) &&
+	    hexlenl(ciphertext + TAG_LENGTH, NULL) == BINARY_SIZE * 2 &&
+	    !*(ciphertext + TAG_LENGTH + BINARY_SIZE * 2);
 }
 
 static void *get_binary(char *ciphertext)
