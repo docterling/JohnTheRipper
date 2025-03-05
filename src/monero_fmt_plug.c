@@ -71,7 +71,7 @@ static struct fmt_tests tests[] = {
 
 static char (*saved_key)[PLAINTEXT_LENGTH + 1];
 static int *saved_len;
-static char (*saved_slow_hash)[32];
+static struct chacha_ctx *saved_ctx;
 static int keys_changed, any_cracked, *cracked;
 static size_t cracked_size;
 
@@ -105,7 +105,7 @@ static void init(struct fmt_main *self)
 
 	saved_key = mem_calloc(sizeof(*saved_key), self->params.max_keys_per_crypt);
 	saved_len = mem_calloc(self->params.max_keys_per_crypt, sizeof(*saved_len));
-	saved_slow_hash = mem_calloc(sizeof(*saved_slow_hash), self->params.max_keys_per_crypt);
+	saved_ctx = mem_calloc(sizeof(*saved_ctx), self->params.max_keys_per_crypt);
 	keys_changed = any_cracked = 0;
 	cracked_size = sizeof(*cracked) * self->params.max_keys_per_crypt;
 	cracked = mem_calloc(cracked_size, 1);
@@ -131,7 +131,7 @@ static void done(void)
 
 	MEM_FREE(saved_key);
 	MEM_FREE(saved_len);
-	MEM_FREE(saved_slow_hash);
+	MEM_FREE(saved_ctx);
 	MEM_FREE(cracked);
 }
 
@@ -221,9 +221,8 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 #pragma omp parallel for schedule(dynamic,1)
 #endif
 	for (index = 0; index < count; index++) {
-		char *km = saved_slow_hash[index];
+		struct chacha_ctx *ckey = &saved_ctx[index];
 		unsigned char out[32];
-		struct chacha_ctx ckey;
 
 		if (keys_changed) {
 #ifdef _OPENMP
@@ -236,7 +235,7 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 			const int t = 0;
 #endif
 			if ((!memory[t].aligned && !alloc_region(&memory[t], 1 << 21)) ||
-			    cn_slow_hash(saved_key[index], saved_len[index], km, memory[t].aligned)) {
+			    cn_slow_hash(saved_key[index], saved_len[index], (char *)out, memory[t].aligned)) {
 				failed = 1;
 #ifdef _OPENMP
 				continue;
@@ -244,13 +243,13 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 				break;
 #endif
 			}
+			chacha_keysetup(ckey, out, 256);
 		}
 
 		// 1
-		chacha_keysetup(&ckey, (unsigned char *)km, 256);
-		chacha_ivsetup(&ckey, cur_salt->ct, NULL, IVLEN);
-		chacha_decrypt_bytes(&ckey, cur_salt->ct + IVLEN + 2, out, 32, 20);
-		if (memmem(out, 32, (void*)"key_data", 8) || memmem(out, 32, (void*)"m_creation_timestamp", 20)) {
+		chacha_ivsetup(ckey, cur_salt->ct, NULL, IVLEN);
+		chacha_decrypt_bytes(ckey, cur_salt->ct + IVLEN + 2, out, 32, 20);
+		if (memmem(out, 32, "key_data", 8) || memmem(out, 32, "m_creation_timestamp", 20)) {
 			cracked[index] = 1;
 #ifdef _OPENMP
 #pragma omp atomic
@@ -260,9 +259,9 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 		}
 
 		// 2
-		chacha_ivsetup(&ckey, cur_salt->ct, NULL, IVLEN);
-		chacha_decrypt_bytes(&ckey, cur_salt->ct + IVLEN + 2, out, 32, 8);
-		if (memmem(out, 32, (void*)"key_data", 8) || memmem(out, 32, (void*)"m_creation_timestamp", 20)) {
+		chacha_ivsetup(ckey, cur_salt->ct, NULL, IVLEN);
+		chacha_decrypt_bytes(ckey, cur_salt->ct + IVLEN + 2, out, 32, 8);
+		if (memmem(out, 32, "key_data", 8) || memmem(out, 32, "m_creation_timestamp", 20)) {
 			cracked[index] = 1;
 #ifdef _OPENMP
 #pragma omp atomic
