@@ -223,7 +223,6 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 	for (index = 0; index < count; index++) {
 		char *km = saved_slow_hash[index];
 		unsigned char out[32];
-		unsigned char iv[IVLEN];
 		struct chacha_ctx ckey;
 
 		if (keys_changed) {
@@ -248,9 +247,8 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 		}
 
 		// 1
-		memcpy(iv, cur_salt->ct, IVLEN);
 		chacha_keysetup(&ckey, (unsigned char *)km, 256);
-		chacha_ivsetup(&ckey, iv, NULL, IVLEN);
+		chacha_ivsetup(&ckey, cur_salt->ct, NULL, IVLEN);
 		chacha_decrypt_bytes(&ckey, cur_salt->ct + IVLEN + 2, out, 32, 20);
 		if (memmem(out, 32, (void*)"key_data", 8) || memmem(out, 32, (void*)"m_creation_timestamp", 20)) {
 			cracked[index] = 1;
@@ -262,9 +260,7 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 		}
 
 		// 2
-		memcpy(iv, cur_salt->ct, IVLEN);
-		chacha_keysetup(&ckey, (unsigned char *)km, 256);
-		chacha_ivsetup(&ckey, iv, NULL, IVLEN);
+		chacha_ivsetup(&ckey, cur_salt->ct, NULL, IVLEN);
 		chacha_decrypt_bytes(&ckey, cur_salt->ct + IVLEN + 2, out, 32, 8);
 		if (memmem(out, 32, (void*)"key_data", 8) || memmem(out, 32, (void*)"m_creation_timestamp", 20)) {
 			cracked[index] = 1;
