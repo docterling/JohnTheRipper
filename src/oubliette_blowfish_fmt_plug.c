@@ -158,7 +158,7 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 	int index;
 
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic,1)
 #endif
 	for (index = 0; index < count; index++) {
 		oubliette_state s;
