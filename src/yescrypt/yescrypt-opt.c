@@ -1,6 +1,6 @@
 /*-
  * Copyright 2009 Colin Percival
- * Copyright 2012-2018 Alexander Peslyak
+ * Copyright 2012-2025 Alexander Peslyak
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
  * sub-block), and much less so for YESCRYPT_RW (which uses 2 rounds of Salsa20
  * per block except during pwxform S-box initialization).
  */
+#ifdef __GNUC__
 #if 0 /* JtR hack */
 #ifdef __XOP__
 #warning "Note: XOP is enabled.  That's great."
@@ -50,6 +51,7 @@
 #warning "SSE2 not enabled.  Expect poor performance."
 #else
 #warning "Note: building generic code for non-x86.  That's OK."
+#endif
 #endif
 #endif
 
