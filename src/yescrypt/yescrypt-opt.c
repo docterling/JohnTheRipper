@@ -74,6 +74,8 @@
 #include <emmintrin.h>
 #ifdef __XOP__
 #include <x86intrin.h>
+#elif defined(__AVX512VL__)
+#include <immintrin.h>
 #endif
 #elif defined(__SSE__)
 #include <xmmintrin.h>
@@ -167,6 +169,9 @@ static inline void salsa20_simd_unshuffle(const salsa20_blk_t *Bin,
 #ifdef __XOP__
 #define ARX(out, in1, in2, s) \
 	out = _mm_xor_si128(out, _mm_roti_epi32(_mm_add_epi32(in1, in2), s));
+#elif defined(__AVX512VL__)
+#define ARX(out, in1, in2, s) \
+	out = _mm_xor_si128(out, _mm_rol_epi32(_mm_add_epi32(in1, in2), s));
 #else
 #define ARX(out, in1, in2, s) { \
 	__m128i tmp = _mm_add_epi32(in1, in2); \
