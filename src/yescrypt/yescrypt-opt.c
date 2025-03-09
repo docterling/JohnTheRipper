@@ -40,6 +40,8 @@
 #if 0 /* JtR hack */
 #ifdef __XOP__
 #warning "Note: XOP is enabled.  That's great."
+#elif defined(__AVX512VL__)
+#warning "Note: AVX512VL is enabled.  That's great."
 #elif defined(__AVX__)
 #warning "Note: AVX is enabled, which is great for classic scrypt and YESCRYPT_WORM, but is sometimes slightly slower than plain SSE2 for YESCRYPT_RW"
 #elif defined(__SSE2__)
