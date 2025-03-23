@@ -50,8 +50,10 @@ static struct fmt_tests tests[] = {
 	{"35LSBeq/uVetI", "==*d2{^6"},
 	{"hiH9IOyyrrl4k", "cqjmide"}, /* collisions */
 	{"hiH9IOyyrrl4k", "ifpqgio"}, /* James M. Hall, 2010 */
+	{"brokenOz4KxMc", "O!>',%$"},
+	{"brokenOz4KxMc", "5dUD&66"}, /* @hops */
 	{"Tycho2izX8zFg", "?SaO9L2"},
-	{"Tycho2izX8zFg", "g[k-gRo"}, /* @hops_ch */
+	{"Tycho2izX8zFg", "g[k-gRo"}, /* @hops */
 	{NULL}
 };
 
