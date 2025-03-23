@@ -608,7 +608,7 @@ static char* is_key_right(struct fmt_main *format, int index,
 		return err_buf;
 	}
 
-	if (match == count) {
+	if (match == count && !(format->params.flags & FMT_MASK) && !strstr(format->params.label, "-opencl")) {
 /* Presumably no index mapping occurred, so require match at input index */
 		i = -1;
 		if (format->methods.cmp_one(binary, index))
