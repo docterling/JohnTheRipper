@@ -1917,6 +1917,10 @@ static void john_run(void)
 
 static void john_done(void)
 {
+	log_event("Passwords tested: %" PRIu64 " (all time)", status.cands);
+	log_event(" dupe suppressor: %llu accepted, %llu rejected out of total %llu (while active during this run)",
+	    status.suppressor_miss, status.suppressor_hit, status.suppressor_miss + status.suppressor_hit);
+
 	if ((options.flags & (FLG_CRACKING_CHK | FLG_STDOUT)) ==
 	    FLG_CRACKING_CHK) {
 		if (!event_abort && mask_iter_warn) {
@@ -1948,7 +1952,6 @@ static void john_done(void)
 			/* We already printed to stderr from signals.c */
 			log_event("%s", abort_msg);
 		} else if (children_ok) {
-			log_event("Candidates tried: %"PRIu64"p", status.cands);
 			log_event("Session completed");
 			if (john_main_process) {
 				fprintf(stderr, "Session completed. %s\n", mode_exit_message);
