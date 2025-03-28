@@ -1917,9 +1917,11 @@ static void john_run(void)
 
 static void john_done(void)
 {
-	log_event("Passwords tested: %" PRIu64 " (all time)", status.cands);
-	log_event(" dupe suppressor: %llu accepted, %llu rejected out of total %llu (while active during this run)",
-	    status.suppressor_miss, status.suppressor_hit, status.suppressor_miss + status.suppressor_hit);
+	if (options.flags & FLG_CRACKING_CHK) {
+		log_event("Passwords tested: %" PRIu64 " (all time)", status.cands);
+		log_event(" dupe suppressor: %llu accepted, %llu rejected out of total %llu (while active during this run)",
+		    status.suppressor_miss, status.suppressor_hit, status.suppressor_miss + status.suppressor_hit);
+	}
 
 	if ((options.flags & (FLG_CRACKING_CHK | FLG_STDOUT)) ==
 	    FLG_CRACKING_CHK) {
