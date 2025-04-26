@@ -906,8 +906,8 @@ AC_CHECK_FUNCS([posix_memalign aligned_alloc memalign __mingw_aligned_malloc _al
 AC_CACHE_SAVE
 
 if test "x$simd" != xno ; then
-  if test "x$SIMD_NAME" == "xAVX-512"; then
-    CPU_BEST_FLAGS_MAIN+="-DJOHN_AVX512BW"
+  if test "x$SIMD_NAME" = "xAVX-512"; then
+    CPU_BEST_FLAGS_MAIN="$CPU_BEST_FLAGS_MAIN -DJOHN_AVX512BW"
   else
     CPU_BEST_FLAGS_MAIN=-DJOHN_$(echo ${SIMD_NAME} | tr .a-z _A-Z)
   fi
