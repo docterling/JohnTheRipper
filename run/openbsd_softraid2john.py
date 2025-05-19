@@ -56,7 +56,7 @@ def process_file(filename):
     if headers[260] != 1 and headers[260] != b"\x01":
         sys.stderr.write(filename + " : Wrong optional header type\n")
         return
-    if headers[284] != 2 and headers[260] != b"\x02":
+    if headers[284] != 2 and headers[284] != b"\x02":
         sys.stderr.write(filename + " : Wrong encryption type\n")
         return
 
