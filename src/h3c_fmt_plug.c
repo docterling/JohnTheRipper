@@ -66,10 +66,6 @@ john_register_one(&fmt_h3c);
 #define OMP_SCALE          8
 #endif
 
-#ifdef SIMD_COEF_64
-#define FMT_IS_64BIT
-#endif
-
 static unsigned char cursalt[SALT_SIZE];
 static int (*saved_len);
 static char (*saved_key)[PLAINTEXT_LENGTH + 1];
@@ -161,7 +157,13 @@ static void *get_salt(char *ciphertext)
 	return (void *)salt;
 }
 
+/*
+ * While this hash does use 64-bit integers, our fmt_default_binary_hash_*()
+ * read 32-bit integers, so our get_hash_*() ought to do the same.
+ */
+#if 0
 #define COMMON_GET_HASH_64BIT_HASH
+#endif
 #define COMMON_GET_HASH_VAR crypt_out
 #include "common-get-hash.h"
 
