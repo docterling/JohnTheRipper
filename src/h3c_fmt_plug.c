@@ -37,10 +37,10 @@ john_register_one(&fmt_h3c);
 #define TAG_LENGTH         (sizeof(FORMAT_TAG)-1)
 
 #ifdef SIMD_COEF_64
-#define ALGORITHM_NAME     SHA512_ALGORITHM_NAME
+#define ALGORITHM_NAME     "SHA512 " SHA512_ALGORITHM_NAME
 #define NBKEYS             (SIMD_COEF_64*SIMD_PARA_SHA512)
 #else
-#define ALGORITHM_NAME     "64/" ARCH_BITS_STR
+#define ALGORITHM_NAME     "SHA512 " ARCH_BITS_STR "/" ARCH_BITS_STR
 #define NBKEYS             1
 #endif
 
@@ -243,7 +243,7 @@ struct fmt_main fmt_h3c = {
 	{
 		FORMAT_LABEL,
 		FORMAT_NAME,
-		"SHA512 " ALGORITHM_NAME,
+		ALGORITHM_NAME,
 		BENCHMARK_COMMENT,
 		BENCHMARK_LENGTH,
 		0,
