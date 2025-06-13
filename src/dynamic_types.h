@@ -287,8 +287,8 @@ typedef struct private_subformat_data
 #define ALGORITHM_NAME_SKEIN     "32/"ARCH_BITS_STR " sph_skein"
 #define ALGORITHM_NAME_X86_SKEIN "32/"ARCH_BITS_STR " sph_skein"
 
-#define ALGORITHM_NAME_KECCAK     "64/"ARCH_BITS_STR " keccak"
-#define ALGORITHM_NAME_X86_KECCAK "64/"ARCH_BITS_STR " keccak"
+#define ALGORITHM_NAME_KECCAK     ARCH_BITS_STR "/" ARCH_BITS_STR " keccak"
+#define ALGORITHM_NAME_X86_KECCAK ARCH_BITS_STR "/" ARCH_BITS_STR " keccak"
 
 #define ALGORITHM_NAME_SM3     "32/"ARCH_BITS_STR " sm3"
 #define ALGORITHM_NAME_X86_SM3 "32/"ARCH_BITS_STR " sm3"
