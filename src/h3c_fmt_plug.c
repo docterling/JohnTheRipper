@@ -60,7 +60,7 @@ john_register_one(&fmt_h3c);
 #define DIGEST_SIZE        64
 #define CIPHERTEXT_LENGTH  88
 
-#define BASE64_ALPHABET    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+#define BASE64_ALPHABET    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 #ifndef OMP_SCALE
 #define OMP_SCALE          8
@@ -131,9 +131,7 @@ static int valid(char *ciphertext, struct fmt_main *self)
 	ciphertext += SALT_SIZE + 1;
 
 	len = strspn(ciphertext, BASE64_ALPHABET);
-	if (len != CIPHERTEXT_LENGTH)
-		return 0;
-	return 1;
+	return len == CIPHERTEXT_LENGTH - 2 && !strcmp(ciphertext + len, "==");
 }
 
 static void *get_binary(char *ciphertext)
