@@ -9,6 +9,38 @@
 #
 # The code itself is still a fabrication of Dhiru.
 
+# This software is
+#
+# Copyright (c) 2013-2014 Dhiru Kholia <dhiru at openwall.com>
+# Copyright (c) 2013 Lukas Odzioba <ukasz at openwall dot net>
+# Copyright (c) 2014 Alexey Lapitsky <lex at realisticgroup.com>
+# Copyright (c) 2014 m3g9tr0n (Spiros Fraganastasis) <spirosfr.1985 at gmail.com>
+#
+# and it is hereby released to the general public under the following terms:
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted.
+
+# pcap_parser_s7() is under GNU GPL v3 per the below statement:
+
+# s7tojohn.py, parse .pcap files and output JtR compatible hashes.
+# Extended by Narendra Kangralkar <narendrakangralkar at gmail.com>
+# and Dhiru Kholia <dhiru at openwall.com>
+#
+# S7 protocol, is used for communication between Engineering Stations,
+# SCADA, HMI & PLC and can be protected by password.
+#
+# Original Authors: Alexander Timorin, Dmitry Sklyarov
+#
+# http://scadastrangelove.org
+#
+# __author__      = "Aleksandr Timorin"
+# __copyright__   = "Copyright 2013, Positive Technologies"
+# __license__     = "GNU GPL v3"
+# __version__     = "1.2"
+# __maintainer__  = "Aleksandr Timorin"
+# __email__       = "atimorin@gmail.com"
+# __status__      = "Development"
 
 import base64
 from binascii import hexlify
