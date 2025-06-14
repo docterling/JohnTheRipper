@@ -11,10 +11,12 @@
 
 # This software is
 #
-# Copyright (c) 2013-2014 Dhiru Kholia <dhiru at openwall.com>
+# Copyright (c) 2013-2018 Dhiru Kholia <dhiru at openwall.com>
 # Copyright (c) 2013 Lukas Odzioba <ukasz at openwall dot net>
 # Copyright (c) 2014 Alexey Lapitsky <lex at realisticgroup.com>
 # Copyright (c) 2014 m3g9tr0n (Spiros Fraganastasis) <spirosfr.1985 at gmail.com>
+# Copyright (c) 2021-2024 exploide <me at exploide.net>
+# Copyright (c) 2025 Albert Veli <albert.veli at gmail.com>
 #
 # and it is hereby released to the general public under the following terms:
 #
