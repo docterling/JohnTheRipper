@@ -1095,7 +1095,12 @@ static void do_convert_wholefile(char *fname, char *outfname, b64_convert_type i
 		exit(-1);
 	}
 	fclose(fp);
+
 	fp = fopen(outfname, "wb");
+	if (!fp) {
+		fprintf(stderr, "Error, could not open file [%s]\n", outfname);
+		exit(-1);
+	}
 
 	if (!quiet)
 		printf("%s  -->  %s", in_str, in_len ? "" : "\n");
