@@ -11,12 +11,12 @@ Expected input (e.g. from SQLite dump):
 Output:
     username:$pbkdf2-sha256$<iterations>$<base64 salt>$<base64 hash>
 
-Usage example:
-    sqlite3 gitea.db 'SELECT name, salt, passwd, passwd_hash_algo FROM user;' | ./gitea2john.py > john.hashes
-
+Usage examples:
     echo 'isaac:73616c74313233:599abd158ef01da5e7282425bd05652119b4699cac7f0f13a4b325773f50bbfa8ceeaf96926f68add8bd544390e6abce421e:pbkdf2$50000$50' | ./gitea2john.py > john.hashes
+    ./john --format=pbkdf2-hmac-sha256 john.hashes
 
-    john --format=pbkdf2-hmac-sha256 john.hashes --wordlist=rockyou-10.txt
+    sqlite3 gitea.db 'SELECT name, salt, passwd, passwd_hash_algo FROM user;' | ./gitea2john.py > john.hashes
+    ./john --format=pbkdf2-hmac-sha256 john.hashes
 """
 
 import base64
